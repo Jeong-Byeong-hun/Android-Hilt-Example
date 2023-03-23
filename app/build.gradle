@@ -1,11 +1,25 @@
 plugins {
     id 'com.android.application'
     id 'org.jetbrains.kotlin.android'
+    id 'com.google.dagger.hilt.android'
+    id 'kotlin-kapt'
 }
+
 
 android {
     namespace 'com.example.hiltexample'
     compileSdk 32
+
+    buildscript {
+        repositories {
+            // other repositories...
+            mavenCentral()
+        }
+        dependencies {
+            // other plugins...
+            classpath 'com.google.dagger:hilt-android-gradle-plugin:2.45'
+        }
+    }
 
     defaultConfig {
         applicationId "com.example.hiltexample"
@@ -44,4 +58,12 @@ dependencies {
 
     implementation 'com.squareup.retrofit2:retrofit:2.9.0'
     implementation 'com.squareup.retrofit2:converter-gson:2.9.0'
+
+    implementation 'com.google.dagger:hilt-android:2.45'
+    kapt 'com.google.dagger:hilt-compiler:2.45'
+
+}
+
+kapt {
+    correctErrorTypes true
 }
