@@ -6,7 +6,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 
 class ApiClientComObj {
     init {
-        val baseUrl = "https://g.tenor.com/"
+        val baseUrl = "https://tenor.googleapis.com/"
 
         val retrofit: Retrofit = Retrofit.Builder()
             .baseUrl(baseUrl)
@@ -14,10 +14,6 @@ class ApiClientComObj {
             .build()
 
         retrofit.create(PictureService::class.java)
-    }
-
-    public fun getPictureService(){
-
     }
 
     companion object {
