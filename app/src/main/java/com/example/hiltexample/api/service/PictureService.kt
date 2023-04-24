@@ -12,5 +12,5 @@ interface PictureService {
      * gif 리스트 가져오기
      */
     @GET("/v1/search/{key}")
-    fun getGifList(@Path("key") key: String): Call<BaseResult>
+    suspend fun getGifList(@Path("key") key: String): Call<BaseResult>
 }
