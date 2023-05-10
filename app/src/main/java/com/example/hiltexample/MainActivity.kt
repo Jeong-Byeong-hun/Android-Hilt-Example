@@ -1,36 +1,94 @@
 package com.example.hiltexample
 
-import android.content.ContentValues
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.viewModels
-import com.example.hiltexample.api.ApiClientComObj
-import com.example.hiltexample.api.BaseResult
+import androidx.appcompat.app.AppCompatActivity
+import androidx.recyclerview.widget.DividerItemDecoration
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.RecyclerView.SCROLL_STATE_IDLE
+import androidx.recyclerview.widget.StaggeredGridLayoutManager
+import com.example.hiltexample.adapter.ImageAdapter
+import com.example.hiltexample.api.SearchVo
 import com.example.hiltexample.databinding.ActivityMainBinding
-import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
 
-    lateinit var binding: ActivityMainBinding
+    private lateinit var binding: ActivityMainBinding
     private val viewModel: MainViewModel by viewModels()
+    private var page = 1
+    private lateinit var imageAdapter: ImageAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        setLayoutManager()
+        setAdapter()
+
         viewModel.getData().observe(this) { data ->
-            data?.let {
-                Log.d("TAG", "onCreate: " + data.toString())
+            data?.let { it ->
+                imageAdapter.addImage(it as MutableList<SearchVo>)
             }
         }
 
-        Log.d("TAG", "onCreate: ")
+
+        binding.btn.setOnClickListener {
+            imageAdapter.clearImage()
+            if (binding.etSearch.text?.toString()?.trim()?.isNotEmpty() == true) {
+                viewModel.next = ""
+                viewModel.loadData(binding.etSearch.text?.toString()?.trim() as String)
+            }
+        }
+
+        binding.rcImage.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            private var state: Int = 0
+            private lateinit var lastItem: IntArray
+            private var totalItemCount = 0
+            override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
+                super.onScrollStateChanged(recyclerView, newState)
+                Log.d("TAG", "onScrollStateChanged: $newState")
+                state = newState
+                if (state == SCROLL_STATE_IDLE) {
+                    if (lastItem.isNotEmpty()) {
+                        if (lastItem[0] == totalItemCount - 1 || lastItem[1] == totalItemCount - 1) {
+                            page++
+                            viewModel.loadData(binding.etSearch.text?.toString()?.trim() as String)
+                        }
+
+                    }
+                }
+            }
+
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                super.onScrolled(recyclerView, dx, dy)
+                val spanCount = (recyclerView?.layoutManager as StaggeredGridLayoutManager).spanCount
+                lastItem = (recyclerView.layoutManager as StaggeredGridLayoutManager).findLastCompletelyVisibleItemPositions(IntArray(spanCount))
+                totalItemCount = (recyclerView?.layoutManager as StaggeredGridLayoutManager).itemCount
+
+                Log.d("TAG", "onScrolled: size " + lastItem[0])
+                Log.d("TAG", "onScrolled: size " + lastItem[1])
+                Log.d("TAG", "onScrolled: all size " + totalItemCount)
+                Log.d("TAG", "onScrolled: state $state")
+
+            }
+        })
+
+    }
+
+
+    private fun setLayoutManager() {
+        val staggeredGridLayoutManager = StaggeredGridLayoutManager(2, LinearLayoutManager.VERTICAL).apply {
+        }
+        binding.rcImage.layoutManager = staggeredGridLayoutManager
+    }
+
+    private fun setAdapter() {
+        imageAdapter = ImageAdapter()
+        binding.rcImage.adapter = imageAdapter
     }
 }

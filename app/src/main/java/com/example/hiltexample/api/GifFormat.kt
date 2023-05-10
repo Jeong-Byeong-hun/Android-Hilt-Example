@@ -2,12 +2,13 @@ package com.example.hiltexample.api
 
 import com.google.gson.annotations.SerializedName
 
-data class MediaFormat(
+data class GifFormat(
     @SerializedName("gif")
-    var gifVo: GifVo,
+    var gif: String,
 
     @SerializedName("mediumgif")
-    var mediumgif: GifVo,
+    var mediumgif : String,
 
     @SerializedName("tinygif")
-    var tinygif: GifVo)
+    var tinygif : String
+)
