@@ -16,7 +16,7 @@ import javax.inject.Inject
 @HiltViewModel
 class MainViewModel @Inject constructor(private val myRepository: MyRepository) : ViewModel() {
 
-    val API_KEY = "AIzaSyBMUxoWmHIF1EMZcPDS6JJlOeJCOegcDT4"
+    var API_KEY = ""
     val CLIENT_KEY = "Hilt Example"
     var next : String = ""
     var liveData = MutableLiveData<List<SearchVo>>()

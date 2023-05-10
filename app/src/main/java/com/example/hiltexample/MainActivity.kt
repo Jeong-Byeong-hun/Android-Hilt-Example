@@ -30,6 +30,8 @@ class MainActivity : AppCompatActivity() {
         setLayoutManager()
         setAdapter()
 
+        viewModel.API_KEY = resources.getString(R.string.API_KEY)
+
         viewModel.getData().observe(this) { data ->
             data?.let { it ->
                 imageAdapter.addImage(it as MutableList<SearchVo>)
