@@ -11,7 +11,7 @@
         android:id="@+id/image"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:minHeight="50dp"
+        android:minHeight="300dp"
         android:adjustViewBounds="true"/>
 
 </com.google.android.material.card.MaterialCardView>

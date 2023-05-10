@@ -42,6 +42,7 @@ class MainActivity : AppCompatActivity() {
             if (binding.etSearch.text?.toString()?.trim()?.isNotEmpty() == true) {
                 viewModel.next = ""
                 viewModel.loadData(binding.etSearch.text?.toString()?.trim() as String)
+                binding.rcImage.scrollToPosition(0)
             }
         }
 
@@ -56,7 +57,6 @@ class MainActivity : AppCompatActivity() {
                 if (state == SCROLL_STATE_IDLE) {
                     if (lastItem.isNotEmpty()) {
                         if (lastItem[0] == totalItemCount - 1 || lastItem[1] == totalItemCount - 1) {
-                            page++
                             viewModel.loadData(binding.etSearch.text?.toString()?.trim() as String)
                         }
 
@@ -66,9 +66,11 @@ class MainActivity : AppCompatActivity() {
 
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 super.onScrolled(recyclerView, dx, dy)
-                val spanCount = (recyclerView?.layoutManager as StaggeredGridLayoutManager).spanCount
-                lastItem = (recyclerView.layoutManager as StaggeredGridLayoutManager).findLastCompletelyVisibleItemPositions(IntArray(spanCount))
-                totalItemCount = (recyclerView?.layoutManager as StaggeredGridLayoutManager).itemCount
+                val spanCount = (recyclerView.layoutManager as StaggeredGridLayoutManager).spanCount
+//                lastItem = (recyclerView.layoutManager as StaggeredGridLayoutManager).findLastCompletelyVisibleItemPositions(IntArray(spanCount))
+                totalItemCount = (recyclerView.layoutManager as StaggeredGridLayoutManager).itemCount
+                 lastItem = (recyclerView.layoutManager as StaggeredGridLayoutManager).findLastVisibleItemPositions(IntArray(spanCount))
+
 
                 Log.d("TAG", "onScrolled: size " + lastItem[0])
                 Log.d("TAG", "onScrolled: size " + lastItem[1])
