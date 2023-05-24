@@ -20,8 +20,6 @@ interface PictureService {
         key: String,
         @Query("client_key")
         client_key: String,
-        @Query("locale")
-        locale: String,
         @Query("contentfilter")
         contentfilter: String,
         @Query("media_filter")

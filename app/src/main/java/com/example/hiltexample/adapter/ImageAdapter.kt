@@ -1,5 +1,6 @@
 package com.example.hiltexample.adapter
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
@@ -25,6 +26,8 @@ class ImageAdapter : RecyclerView.Adapter<ImageHolder>() {
 
     fun addImage(imageList: MutableList<SearchVo>) {
         var prevSize = this.imageList.size
+        Log.d("TAG", "addImage: prev $prevSize")
+        Log.d("TAG", "addImage: imgSize ${imageList.size}")
         this.imageList.addAll(imageList)
         notifyItemChanged(prevSize, imageList.size)
     }

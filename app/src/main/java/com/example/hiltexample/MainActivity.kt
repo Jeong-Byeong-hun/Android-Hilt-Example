@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.util.Log
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.SCROLL_STATE_IDLE
@@ -19,7 +18,6 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
     private val viewModel: MainViewModel by viewModels()
-    private var page = 1
     private lateinit var imageAdapter: ImageAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -55,13 +53,13 @@ class MainActivity : AppCompatActivity() {
             override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
                 super.onScrollStateChanged(recyclerView, newState)
                 Log.d("TAG", "onScrollStateChanged: $newState")
+                (recyclerView.layoutManager as StaggeredGridLayoutManager?)!!.invalidateSpanAssignments()
                 state = newState
                 if (state == SCROLL_STATE_IDLE) {
                     if (lastItem.isNotEmpty()) {
-                        if (lastItem[0] == totalItemCount - 1 || lastItem[1] == totalItemCount - 1) {
+                        if (lastItem[0] >= totalItemCount - 15 || lastItem[1] >= totalItemCount - 15) {
                             viewModel.loadData(binding.etSearch.text?.toString()?.trim() as String)
                         }
-
                     }
                 }
             }
@@ -71,7 +69,7 @@ class MainActivity : AppCompatActivity() {
                 val spanCount = (recyclerView.layoutManager as StaggeredGridLayoutManager).spanCount
 //                lastItem = (recyclerView.layoutManager as StaggeredGridLayoutManager).findLastCompletelyVisibleItemPositions(IntArray(spanCount))
                 totalItemCount = (recyclerView.layoutManager as StaggeredGridLayoutManager).itemCount
-                 lastItem = (recyclerView.layoutManager as StaggeredGridLayoutManager).findLastVisibleItemPositions(IntArray(spanCount))
+                lastItem = (recyclerView.layoutManager as StaggeredGridLayoutManager).findLastVisibleItemPositions(IntArray(spanCount))
 
 
                 Log.d("TAG", "onScrolled: size " + lastItem[0])
@@ -87,8 +85,10 @@ class MainActivity : AppCompatActivity() {
 
     private fun setLayoutManager() {
         val staggeredGridLayoutManager = StaggeredGridLayoutManager(2, LinearLayoutManager.VERTICAL).apply {
+            gapStrategy = StaggeredGridLayoutManager.GAP_HANDLING_NONE
         }
         binding.rcImage.layoutManager = staggeredGridLayoutManager
+        binding.rcImage.itemAnimator = null
     }
 
     private fun setAdapter() {

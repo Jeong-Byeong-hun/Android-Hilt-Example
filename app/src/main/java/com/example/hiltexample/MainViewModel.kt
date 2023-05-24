@@ -9,7 +9,9 @@ import com.example.hiltexample.api.SearchVo
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 
@@ -28,7 +30,7 @@ class MainViewModel @Inject constructor(private val myRepository: MyRepository) 
 
     fun loadData(searchWord: String) {
         viewModelScope.launch {
-            val data = myRepository.getGifList(searchWord, API_KEY, CLIENT_KEY, 8, next)
+            val data = myRepository.getGifList(searchWord, API_KEY, CLIENT_KEY, 30, next)
 
             when (data.isSuccessful) {
                 true -> {
@@ -53,7 +55,6 @@ class MainViewModel @Inject constructor(private val myRepository: MyRepository) 
                     Log.d("TAG", "loadData fail: " + data.toString())
                 }
             }
-
         }
     }
 
