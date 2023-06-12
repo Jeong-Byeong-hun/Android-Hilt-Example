@@ -4,6 +4,8 @@ import android.os.Bundle
 import android.util.Log
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.SCROLL_STATE_IDLE
@@ -23,12 +25,13 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
+
         setContentView(binding.root)
 
         setLayoutManager()
         setAdapter()
 
-        viewModel.API_KEY = resources.getString(R.string.API_KEY)
+        viewModel.API_KEY  = BuildConfig.APPLICATION_ID;
 
         viewModel.getData().observe(this) { data ->
             data?.let { it ->
@@ -96,3 +99,4 @@ class MainActivity : AppCompatActivity() {
         binding.rcImage.adapter = imageAdapter
     }
 }
+
