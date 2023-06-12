@@ -5,54 +5,57 @@ import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
-import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
+import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
+import androidx.compose.foundation.lazy.staggeredgrid.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.bumptech.glide.Glide
-import com.bumptech.glide.load.DataSource
-import com.bumptech.glide.load.engine.GlideException
-import com.bumptech.glide.load.resource.gif.GifDrawable
-import com.bumptech.glide.request.RequestListener
-import com.bumptech.glide.request.target.Target
 import com.example.hiltexample.adapter.ImageAdapter
 import com.example.hiltexample.api.SearchVo
 import com.skydoves.landscapist.glide.GlideImage
 import dagger.hilt.android.AndroidEntryPoint
+
 
 @AndroidEntryPoint
 class MainActivityCompose : ComponentActivity() {
 
     private val viewModel: MainViewModel by viewModels()
     private lateinit var imageAdapter: ImageAdapter
+    private var searchList: MutableList<SearchVo> = arrayListOf()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContent {
-//            ItemImage(imageUrl = "", modifier = Modifier.fillMaxSize())
-        }
         viewModel.API_KEY = BuildConfig.API_KEY
-
-        setAdapter()
-
         viewModel.getData().observe(this) { data ->
             data?.let { it ->
-                imageAdapter.addImage(it as MutableList<SearchVo>)
+//                imageAdapter.addImage(it as MutableList<SearchVo>)
+                searchList.addAll(it)
             }
         }
+//        viewModel.loadData("bocchi")
+        setContent {
+//            ItemImage(imageUrl = "", modifier = Modifier.fillMaxSize())
+//            LazyStaggeredGrid(searchList)
+//            ItemImage(imageUrl = "https://media.tenor.com/j9qiT_IGBpYAAAAM/bocchi-the-rock-bocchi.gif")
+            ImageView()
+        }
 
-        viewModel.loadData("botchi")
-
-
+        setAdapter()
 
     }
 
@@ -72,70 +75,64 @@ fun PreviewGreeting() {
     Greeting()
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun LazyColum() {
-    LazyColumn(
-        modifier = Modifier,
-        contentPadding = PaddingValues(vertical = 8.dp) // 8.dp between each item
+fun LazyStaggeredGrid(searchList: MutableList<SearchVo>) {
+    LazyVerticalStaggeredGrid(
+        columns = StaggeredGridCells.Fixed(2),
+        modifier = Modifier.fillMaxSize(),
+        contentPadding = PaddingValues(16.dp)
     ) {
-        item {
-            // If you want a single item
-        }
-        items(items = listOf<Any>()) { item ->
-            // display a single list item
-            // it's like forEach {}
+        items(searchList.size) { item ->
+            ItemImage(imageUrl = searchList[item].media_formats.tinygif.url)
         }
     }
 
 }
 
 @Composable
-fun CardImageItem(){
+fun RandomBoxImageItem() {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(30.dp)
+            .clip(RoundedCornerShape(10.dp)),
+        contentAlignment = Alignment.Center,
+    ) {
+
+    }
+}
+
+
+@Composable
+fun ItemImage(imageUrl: String) {
+    GlideImage(imageModel = { imageUrl }
+    , Modifier.padding(6.dp))
+}
+
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+fun ImageView(viewModel: MainViewModel = androidx.lifecycle.viewmodel.compose.viewModel()) {
+    val temp = viewModel.getData().observeAsState()
+    LaunchedEffect(key1 = Unit) {
+        viewModel.loadData("bocchi")
+    }
+
+    Log.d("TAG", "ImageView: " + temp)
+    if (temp.value != null) {
+        LazyVerticalStaggeredGrid(
+            columns = StaggeredGridCells.Fixed(2),
+            modifier = Modifier.fillMaxWidth(),
+            contentPadding = PaddingValues(16.dp)
+        ) {
+            items(temp.value!!) { it ->
+                ItemImage(imageUrl = it.media_formats.gifVo.url)
+            }
+        }
+    }
 
 }
 
-//@Composable
-//fun ItemImage(imageUrl: String, modifier: Modifier) {
-//    GlideImage(imageModel = { imageUrl },
-//        requestBuilder = { Glide.with(LocalContext.current.applicationContext).asGif() },
-//        requestListener = object : RequestListener<GifDrawable>, () -> RequestListener<Any> {
-//            override fun onLoadFailed(
-//                e: GlideException?,
-//                model: Any?,
-//                target: Target<GifDrawable>?,
-//                isFirstResource: Boolean
-//            ): Boolean {
-//                Log.d("TAG", "onLoadFailed: ")
-//                return false
-//            }
-//
-//            override fun onResourceReady(
-//                resource: GifDrawable?,
-//                model: Any?,
-//                target: Target<GifDrawable>?,
-//                dataSource: DataSource?,
-//                isFirstResource: Boolean
-//            ): Boolean {
-//                resource?.start()
-//                Log.d("TAG", "onResourceReady: ")
-//                return true
-//            }
-//
-//            override fun invoke(): RequestListener<Any> {
-//                TODO("Not yet implemented")
-//            }
-//        }, modifier = Modifier.fillMaxSize(),
-//        loading = {
-//            BoxWithConstraints(
-//                modifier = Modifier.fillMaxSize(),
-//                contentAlignment = Alignment.Center
-//            ) {
-//                CircularProgressIndicator()
-//            }
-//        },
-//        failure = {
-//            Text(text = "image loading failed.")
-//        })
-//}
+
 
 
