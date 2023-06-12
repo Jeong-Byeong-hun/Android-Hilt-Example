@@ -4,8 +4,6 @@ import android.os.Bundle
 import android.util.Log
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.SCROLL_STATE_IDLE
@@ -31,13 +29,13 @@ class MainActivity : AppCompatActivity() {
         setLayoutManager()
         setAdapter()
 
-        viewModel.API_KEY  = BuildConfig.APPLICATION_ID;
+//        viewModel.API_KEY =
 
-        viewModel.getData().observe(this) { data ->
-            data?.let { it ->
-                imageAdapter.addImage(it as MutableList<SearchVo>)
+            viewModel.getData().observe(this) { data ->
+                data?.let { it ->
+                    imageAdapter.addImage(it as MutableList<SearchVo>)
+                }
             }
-        }
 
 
         binding.btn.setOnClickListener {
@@ -71,8 +69,12 @@ class MainActivity : AppCompatActivity() {
                 super.onScrolled(recyclerView, dx, dy)
                 val spanCount = (recyclerView.layoutManager as StaggeredGridLayoutManager).spanCount
 //                lastItem = (recyclerView.layoutManager as StaggeredGridLayoutManager).findLastCompletelyVisibleItemPositions(IntArray(spanCount))
-                totalItemCount = (recyclerView.layoutManager as StaggeredGridLayoutManager).itemCount
-                lastItem = (recyclerView.layoutManager as StaggeredGridLayoutManager).findLastVisibleItemPositions(IntArray(spanCount))
+                totalItemCount =
+                    (recyclerView.layoutManager as StaggeredGridLayoutManager).itemCount
+                lastItem =
+                    (recyclerView.layoutManager as StaggeredGridLayoutManager).findLastVisibleItemPositions(
+                        IntArray(spanCount)
+                    )
 
 
                 Log.d("TAG", "onScrolled: size " + lastItem[0])
@@ -87,9 +89,10 @@ class MainActivity : AppCompatActivity() {
 
 
     private fun setLayoutManager() {
-        val staggeredGridLayoutManager = StaggeredGridLayoutManager(2, LinearLayoutManager.VERTICAL).apply {
-            gapStrategy = StaggeredGridLayoutManager.GAP_HANDLING_NONE
-        }
+        val staggeredGridLayoutManager =
+            StaggeredGridLayoutManager(2, LinearLayoutManager.VERTICAL).apply {
+                gapStrategy = StaggeredGridLayoutManager.GAP_HANDLING_NONE
+            }
         binding.rcImage.layoutManager = staggeredGridLayoutManager
         binding.rcImage.itemAnimator = null
     }
